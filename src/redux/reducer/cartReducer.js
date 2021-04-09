@@ -5,11 +5,9 @@ import { SUCCESS_REMOVECART } from '../type/removeCartType'
 const initialState = {
     cart: []
 }
-console.log("🚀 ~ file: cartReducer.js ~ line 8 ~ cart", initialState.cart)
 
 const cartReducer = (state = initialState, action) => {
     const { type, payload } = action
-    console.log("🚀 ~ file: cartReducer.js ~ line 12 ~ cartReducer ~ payload", payload)
     
     switch (type) {
         case CART_START:

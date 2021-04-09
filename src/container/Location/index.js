@@ -7,11 +7,15 @@ import MapViewDirections from 'react-native-maps-directions'
 //styles 
 import styles from './style'
 
+//Icons
+import Entypo from 'react-native-vector-icons/Entypo'
+
 const Location = props => {
-    // const [randomPlace, setRandomPlace] = useState({})
+    const [defaultLatLong, setDefaultLatLong] = useState({})
     const [dragStart, onDragStart] = useState({})
     const [dragEnd, onDragEnd] = useState({})
-    // const [locationChoose, setLocationChosse] = useState(false)
+    const [showDirection, setShowDirection] = useState(false)
+    console.log("🚀 ~ file: index.js ~ line 18 ~ showDirection", showDirection)
     const [seletedLocation, setSeletedLocation] = useState({});
     const mapRef = useRef(null);
 
@@ -22,7 +26,6 @@ const Location = props => {
 
     const getCurrentLocation = () => {
         Geolocation.getCurrentPosition(success => {
-            // console.log(success, 'success')
             if (mapRef.current) {
                 mapRef.current.animateCamera(
                     {
@@ -39,7 +42,10 @@ const Location = props => {
                 longitude: success.coords.longitude,
                 latitude: success.coords.latitude
             })
-            // setLocationChosse(true)
+            setDefaultLatLong({
+                longitude: success.coords.longitude,
+                latitude: success.coords.latitude
+            })
         }, error => {
             console.log(error, 'error')
         })
@@ -65,7 +71,8 @@ const Location = props => {
         //     ...seletedLocation,
         //     longitude: val.longitude,
         //     latitude: val.latitude
-        // })
+        // }) 
+        setShowDirection(false)
         if (mapRef.current) {
             mapRef.current.animateCamera(
                 {
@@ -78,6 +85,7 @@ const Location = props => {
                 5000
             );
         }
+
         setSeletedLocation({
             longitude: val.longitude,
             latitude: val.latitude
@@ -87,17 +95,24 @@ const Location = props => {
 
     const handleDefaultLocation = () => {
         getCurrentLocation()
+        setShowDirection(false)
     }
+
+    const handleDirection = () => {
+        setShowDirection(true)
+    }
+
+    const GOOGLE_MAPS_APIKEY = 'AIzaSyBZaKAXiunVEVjQaZdIWyl2DWYM4R_w3CA'
 
     return (
         <View style={styles.mainContainer} >
             <View style={{ flex: 1, backgroundColor: 'green', borderWidth: 1 }} >
                 {seletedLocation.latitude ? (
                     <MapView
-                    // onKmlReady={e => console.log('onKmlReady' , e)}
-                    loadingEnabled={true}
-                    // camera={camera}
-                    // userInterfaceStyle='dark'
+                        // onKmlReady={e => console.log('onKmlReady' , e)}
+                        loadingEnabled={true}
+                        // camera={camera}
+                        // userInterfaceStyle='dark'
                         // liteMode={true}
                         // mapPadding={{ paddingTop: 20 }}
                         ref={mapRef}
@@ -105,7 +120,7 @@ const Location = props => {
                         style={{ flex: 1 }}
                         // region={}
                         // region={latLong}
-                        // showsUserLocation={true}
+                        showsUserLocation={true}
                         initialRegion={{
                             latitude: seletedLocation.latitude,
                             longitude: seletedLocation.longitude,
@@ -123,17 +138,35 @@ const Location = props => {
                             onDragStart={e => onDragStart(e.nativeEvent.coordinate)}
                             onDragEnd={e => onDragEnd(e.nativeEvent.coordinate)}
                         />
+                        { showDirection && <MapViewDirections
+                            timePrecision='now'
+                            strokeWidth={4}
+                            origin={defaultLatLong}
+                            destination={seletedLocation}
+                            apikey={GOOGLE_MAPS_APIKEY}
+                        />}
+
+                        { showDirection && <Marker
+                            draggable
+                            // isPreselected={true} 
+                            coordinate={defaultLatLong}
+                            onDragStart={e => onDragStart(e.nativeEvent.coordinate)}
+                            onDragEnd={e => onDragEnd(e.nativeEvent.coordinate)}
+                        />}
                         {/* { dragStart && dragEnd && <Polyline
                         // geodesic={true}
                         coordinates={[
                             { latitude: dragStart.latitude, longitude: dragStart.longitude},
                             { latitude: dragEnd.latitude, longitude:dragEnd.longitude}
                         ]} 
-                        />} */}
+                    />} */}
                     </MapView >
                 ) : null}
                 <TouchableOpacity style={styles.iconContainer} onPress={handleDefaultLocation} >
 
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.iconContainer, { bottom: 80 }]} onPress={() => setShowDirection(!showDirection)} >
+                    <Entypo name='direction' style={styles.directionIocn} />
                 </TouchableOpacity>
             </View>
         </View>

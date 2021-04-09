@@ -11,15 +11,20 @@ const styles = StyleSheet.create({
         backgroundColor: 'blue'
     },
     iconContainer: {
-        width: 60,
-        height: 60,
+        width: 50,
+        height: 50,
+        // borderRadius: 100,
         position: 'absolute',
         backgroundColor: 'green',
         bottom: 15,
         right: 15,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10
+        borderRadius: 50
+    },
+    directionIocn: {
+        color: 'white',
+        fontSize: 20
     }
 })
 
